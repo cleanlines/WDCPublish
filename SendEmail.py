@@ -23,7 +23,6 @@ class SendEmail(BaseObject):
                     raise Exception("No email receipt supplied")
         self.log("SendEmail initialised")
 
-
     def send_email_with_files(self,files,subject="Report", body_text=""):
         self.log("Sending email ->\t{0}\t{1}".format(str(self.to), str(files)))
         self.log("SMTP settings:%s, %s" % (self._config.smtpserver, self._config.smtpport))
@@ -44,18 +43,17 @@ class SendEmail(BaseObject):
 
             if not hasattr(self._config,"smtpserver") or not hasattr(self._config,"smtpport"):
                 raise Exception("SMTP details not provided in configuration")
-            print "smtp settings:",self._config.smtpserver," ", self._config.smtpport
             smtp = smtplib.SMTP(self._config.smtpserver, self._config.smtpport)
             smtp.ehlo()
             smtp.starttls()
             # may need to login - see AC email function
             # try:
-            #     smtp.login('fsh', 'snow2nz!')
+            #     smtp.login('fsh', 'blah')
             # except Exception, e:
             #     smtp.docmd("AUTH LOGIN", base64.b64encode( 'fsh' ))
             #     smtp.docmd(base64.b64encode( 'blah' ), "")
 
             smtp.sendmail(self.me, self.to, msg.as_string())
             smtp.close
-        except Exception,err:
-            print err
+        except Exception as e:
+            self.errorlog(e.message)

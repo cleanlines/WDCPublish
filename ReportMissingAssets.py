@@ -1,6 +1,5 @@
 from BaseObject import BaseObject
 import arcpy
-import csv
 from SendEmail import SendEmail
 from CSVHelper import CSVHelper
 from AbstractHelper import AbstractHelper
@@ -15,14 +14,14 @@ class ReportMissingAssets(AbstractHelper, BaseObject):
     def _load_sde_compkeys(self):
         if hasattr(self._config,"sdeconnection") and hasattr(self._config,"tablecsvlookup"):
             sde = arcpy.ArcSDESQLExecute(self._config.sdeconnection)
-            print sde
+            self.log("Using sde connection: %s" % sde)
             try:
                 for k,v in self._config.tablecsvlookup.items():
                     self.log("Processing:{0}|{1}".format(k,v))
                     if not hasattr(self._config,"selectfields"):
                         raise Exception("Expected configuration missing: selectfields")
-                    sql = "select {0} from {1}".format(self._config.selectfields,v)
-                    print sql
+                    sql = "select {0} from {1}".format(self._config.selectfields, v)
+                    self.log("Executing: %s" % sql)
                     sde_return = sde.execute(sql)
                     # debug
                     if isinstance(sde_return,list):
@@ -42,18 +41,16 @@ class ReportMissingAssets(AbstractHelper, BaseObject):
             for k, v in self._config.tablecsvlookup.items():
                 if not hasattr(self,v):
                     raise Exception("No cached compkeys for %s" % v)
-                with open(k,'rb') as csv_file:
-                    delim = self._config.csvdelim if hasattr(self._config,"csvdelim") else ","
-                    asset_reader = csv.reader(csv_file,delimiter=str(delim))
-                    bad_rows = []
-                    for row in asset_reader:
-                        # print row
-                        if not self._validate_compkey(row,v):
-                            bad_rows.append(row)
 
-                    if len(bad_rows) > 1:
-                        # write out csv snd send
-                        self._notify_bad_rows(bad_rows, k, v)
+                delim = self._config.csvdelim if hasattr(self._config, "csvdelim") else ","
+                bad_rows = []
+                for row in CSVHelper().reader(k, delim):
+                    if not self._validate_compkey(row, v):
+                        bad_rows.append(row)
+                if len(bad_rows) > 1:
+                    # write out csv and send
+                    self._notify_bad_rows(bad_rows, k, v)
+
         except Exception:
             # at this point I'm not interested in any particular exceptions just rethrow
             raise
@@ -72,6 +69,9 @@ class ReportMissingAssets(AbstractHelper, BaseObject):
         try:
             key = int(row[compkey_idx])
             return key in getattr(self, v, [])
+        except ValueError as ve:
+            self.log("Error with value:%s" % row[compkey_idx])
+            self.log(ve.message)
         except Exception as e:
             self.errorlog(e.message)
 

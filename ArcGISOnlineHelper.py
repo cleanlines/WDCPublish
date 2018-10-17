@@ -29,9 +29,9 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
                    "username": self._config.user,
                    "password": self._config.password}
         r = requests.post(self._config.agolurl+"/sharing/generateToken?f=json", params=payload,  verify=False) # verify setting for debug - fiddler
-        print(r.json())
-        self._agol_token = r.json()['token']
-        print self._agol_token
+        if 'token' in r.json().keys():
+            self._agol_token = r.json()['token']
+
 
     def _update_agol_file_item(self, item_id, item):
         path, file = os.path.split(item)
@@ -123,7 +123,7 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         updated_draft = self._prep_sddraft(temp_sddraft)
         analysis = arcpy.mapping.AnalyzeForSD(updated_draft)
         arcpy.StageService_server(updated_draft, service_definition)
-        print analysis
+        self.log("Draft analysis:"+str(analysis))
         self._cleanups += [service_definition, temp_sddraft, updated_draft]
         return service_definition
 

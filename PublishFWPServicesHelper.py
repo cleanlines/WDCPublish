@@ -39,17 +39,15 @@ class PublishFWPServicesHelper(BaseObject):
 
     def _copy_features_with_join(self):
         for k, v in self._config.tablecsvlookup.items():
-            print k, v
+            self.log("Copying: %s -> %s" % (k, v))
+            self.log("Out database: %s" % self._out_temp_db)
             sde = self._config.sdeconnection
             fl = r"in_memory\%s" % (self._config.FWPFCname % v.split('.')[-1])
-            print fl
             arcpy.MakeFeatureLayer_management(sde + "/" + v, fl)
             # join to csv
             arcpy.AddJoin_management(fl, self._config.csvsdejoinfield, k, self._config.csvsdejoinfield,
                                      self._config.jointype)
             arcpy.CopyFeatures_management(fl, self._out_temp_db + "/" + self._config.FWPFCname % v.split('.')[-1])
-            print fl
-            print self._out_temp_db
 
 # if __name__ == "__main__":
 #     pfwph = PublishFWPServicesHelper()

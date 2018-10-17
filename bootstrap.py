@@ -34,7 +34,7 @@ class PublishWrapper(BaseLogger):
                 return
             pm.log_success("Full Publish Process")
         # once a month clean up the temp directory
-        if datetime.datetime.now().day == 17:
+        if datetime.datetime.now().day == 1:
             self.log("Time of the month to remove all _ags files.")
             FileHelper().remove_all_temp_files()
 

@@ -23,8 +23,8 @@ class MapDocumentHelper(AbstractHelper, BaseObject):
         return self._current_map_doc
 
     def prepare_map_document(self, data_location):
-        self.log("taking temp geodb and repointing temp template mxd")
-        self.log("{0},{1}".format(map,data_location))
+        self.log("Taking temp geodb and repointing temp template mxd")
+        self.log("{0},{1}".format(self.map,data_location))
         if hasattr(self, "map") and arcpy.Exists(self.map):
             try:
                 a_map = arcpy.mapping.MapDocument(self.map)
