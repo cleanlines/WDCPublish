@@ -1,15 +1,23 @@
 import datetime
 import tempfile
+import os
 
 
 class TempFileName(object):
 
     @staticmethod
-    def generate_temporary_file_name():
+    def generate_temporary_file_name(suffix,file_only=False,split=False):
         f = tempfile.NamedTemporaryFile(
-            prefix="_ags_{0}".format(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")), suffix=".log")
+            prefix="_ags_{0}".format(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")), suffix=suffix)
         file_name = f.name
         f.close()
-        return file_name
+        if file_only:
+            return os.path.split(file_name)[1]
+        if split:
+            return os.path.split(file_name)
+        else:
+            return file_name
 
-# bada bing bada boom
+    @staticmethod
+    def get_temp_directory():
+        return tempfile.tempdir

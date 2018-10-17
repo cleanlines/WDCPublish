@@ -1,17 +1,18 @@
 {
   "emaillookup": {
     "GIS.GISADMIN.WaterLine": [
-      "fraser.hand@gmail.com","Diana.Staveley@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
+      "Diana.Staveley@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
     "GIS.GISADMIN.StormLine": [
-      "fraser.hand@gmail.com","matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
+      "matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
     "GIS.GISADMIN.SewerLine": [
-      "fraser.hand@gmail.com","matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
+      "matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
     "ProcessFailure":["fsh@eagle.co.nz","natalie.hall@eagle.co.nz"]
   },
-  "emailfrom":"fsh@2108-fshxps13.localdomain",
-  "smtpserver":"mail2.eagle.co.nz",
+  "emailfrom":"fsh@eagle.co.nz",
+  "smtpserverusewhenexternal":"mail2.eagle.co.nz - use when external to eagle",
+  "smtpserver":"aklmail.etgnz.eagle.co.nz",
   "smtpport":25
 }

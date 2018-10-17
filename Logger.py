@@ -8,6 +8,7 @@ from TempFileName import TempFileName
 import datetime
 from Singleton import Singleton
 
+
 class Logger(object):
     __metaclass__ = Singleton
 
@@ -32,12 +33,9 @@ class Logger(object):
                 self._log_file = os.path.join(self._log_directory,
                                               "_ags_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S%f") + ".log")
             else:
-                self._log_file = TempFileName.generate_temporary_file_name()
-                # self._log_file = tempfile.NamedTemporaryFile(
-                #     prefix="_ags_{0}".format(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")), suffix=".log").name
+                self._log_file = TempFileName.generate_temporary_file_name(suffix=".log")
 
-            logging.basicConfig(filename=self._log_file, level=self.LEVELS[self.log_level],
-                                format='%(asctime)s - %(levelname)s - %(message)s')
+            logging.basicConfig(filename=self._log_file, level=self.LEVELS[self.log_level], format='%(asctime)s - %(levelname)s - %(message)s')
             logging.captureWarnings(True)
         else:
             # set the logging to the console and a string buffer we can query later

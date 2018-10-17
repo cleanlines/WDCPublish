@@ -1,0 +1,4 @@
+{
+  "db":"C:/ZZCloud/Dropbox/Work/WDC/Python/data/processlog.db",
+  "insert":"INSERT INTO ProcessMonitor VALUES (?,?,?,?,?)"
+}

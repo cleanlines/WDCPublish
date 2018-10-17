@@ -1,0 +1,11 @@
+{
+  "user": "wdc_eagle",
+  "password": "A5xg8k01",
+  "agolurl": "https://wdc.maps.arcgis.com",
+  "itemname": "WDC_%s_Service",
+  "itemdescription": "This item is to support the forward works plan.",
+  "tagsfwp": "WDC,FWP",
+  "filekeyworks": {
+    "sdfilekeywords": "Data, Service, Service Definition"
+  }
+}

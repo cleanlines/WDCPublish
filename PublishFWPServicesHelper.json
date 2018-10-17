@@ -1,0 +1,15 @@
+{
+  "csvsdejoinfield": "COMPKEY",
+  "jointype": "KEEP_COMMON",
+  "FWPFCname": "FWP_%s",
+  "fwpgroup": "7bf56b5caf0f41c7b4cb05888c429cae",
+  "template": {
+    "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/FWP_services_simplified.mxd",
+    "layertofclookup": {
+      "FWP_StormLine": "FWP_StormLine",
+      "FWP_SewerLine": "FWP_SewerLine",
+      "FWP_WaterLine": "FWP_WaterLine"
+    },
+    "workspacetype": "FILEGDB_WORKSPACE"
+  }
+}

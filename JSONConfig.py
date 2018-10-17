@@ -17,8 +17,10 @@ class JSONConfig(BaseLogger):
                 self._common_config = os.path.join(os.path.split(a_file)[0], 'commonconfig.json')
                 self._file = os.path.join(os.path.split(a_file)[0], class_name + '.json')
                 self._logger.do_message("loaded config for {0} from {1}".format(class_name,self._file),"info")
-                if os.path.exists(self._file):
+                if os.path.exists(self._common_config):
                     self.__mixin_config(self._common_config)
+
+                if os.path.exists(self._file):
                     self.__mixin_config(self._file)
                 else:
                     self._logger.do_message("Configuration file not found - %s" % class_name, "info")

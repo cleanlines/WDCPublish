@@ -12,7 +12,6 @@ import base64
 class SendEmail(BaseObject):
     def __init__(self, recipients_lookup,email_list=""):
         super(SendEmail, self).__init__()
-        self._logger.do_message("SendEmail initialised")
         if hasattr(self, "_config") and hasattr(self._config, "emailfrom"):
             self.me = self._config.emailfrom
             try:
@@ -22,10 +21,12 @@ class SendEmail(BaseObject):
                     self.to = email_list
                 else:
                     raise Exception("No email receipt supplied")
+        self.log("SendEmail initialised")
 
 
     def send_email_with_files(self,files,subject="Report", body_text=""):
-        self._logger.do_message("Sending email ->\t{0}\t{1}".format(str(self.to),str(files)),"info")
+        self.log("Sending email ->\t{0}\t{1}".format(str(self.to), str(files)))
+        self.log("SMTP settings:%s, %s" % (self._config.smtpserver, self._config.smtpport))
         try:
             msg = MIMEMultipart()
             msg.attach(MIMEText(body_text))
@@ -43,7 +44,7 @@ class SendEmail(BaseObject):
 
             if not hasattr(self._config,"smtpserver") or not hasattr(self._config,"smtpport"):
                 raise Exception("SMTP details not provided in configuration")
-
+            print "smtp settings:",self._config.smtpserver," ", self._config.smtpport
             smtp = smtplib.SMTP(self._config.smtpserver, self._config.smtpport)
             smtp.ehlo()
             smtp.starttls()
@@ -52,7 +53,7 @@ class SendEmail(BaseObject):
             #     smtp.login('fsh', 'snow2nz!')
             # except Exception, e:
             #     smtp.docmd("AUTH LOGIN", base64.b64encode( 'fsh' ))
-            #     smtp.docmd(base64.b64encode( 'snow2nz!' ), "")
+            #     smtp.docmd(base64.b64encode( 'blah' ), "")
 
             smtp.sendmail(self.me, self.to, msg.as_string())
             smtp.close
