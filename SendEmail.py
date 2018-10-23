@@ -27,32 +27,23 @@ class SendEmail(BaseObject):
         self.log("Sending email ->\t{0}\t{1}".format(str(self.to), str(files)))
         self.log("SMTP settings:%s, %s" % (self._config.smtpserver, self._config.smtpport))
         try:
-            msg = MIMEMultipart()
-            msg.attach(MIMEText(body_text))
+            msg = MIMEMultipart(boundary="-------------------------boundary")
             msg['From'] = self.me.encode('utf-8')
             msg['To'] = COMMASPACE.join(self.to)
             msg['Subject'] = subject.encode('utf-8')
             msg['Date'] = formatdate(localtime=True)
+            msg.attach(MIMEText(body_text))
             for f in files or []:
                 with open(f, "rb") as fil:
-                    msg.attach(MIMEApplication(
-                        fil.read(),
-                        Content_Disposition='attachment; filename="%s"' % basename(f),
-                        Name=basename(f)
-                    ))
+                    part = MIMEApplication(fil.read(),Name=basename(f))
+                part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+                msg.attach(part)
 
             if not hasattr(self._config,"smtpserver") or not hasattr(self._config,"smtpport"):
                 raise Exception("SMTP details not provided in configuration")
             smtp = smtplib.SMTP(self._config.smtpserver, self._config.smtpport)
             smtp.ehlo()
             smtp.starttls()
-            # may need to login - see AC email function
-            # try:
-            #     smtp.login('fsh', 'blah')
-            # except Exception, e:
-            #     smtp.docmd("AUTH LOGIN", base64.b64encode( 'fsh' ))
-            #     smtp.docmd(base64.b64encode( 'blah' ), "")
-
             smtp.sendmail(self.me, self.to, msg.as_string())
             smtp.close
         except Exception as e:

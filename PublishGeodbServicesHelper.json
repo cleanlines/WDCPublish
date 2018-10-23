@@ -3,7 +3,7 @@
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Water_simplified.mxd",
       "layertofclookup": {
-        "Line": "GIS.GISADMIN.WaterLine"
+        "Line": "GIS.GISADMIN.WaterLine_FDC"
       },
       "workspacetype": "SDE_WORKSPACE",
       "groupids":"7bf56b5caf0f41c7b4cb05888c429cae"
@@ -11,9 +11,9 @@
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Sewer_simplified.mxd",
       "layertofclookup": {
-        "Manhole": "GIS.GISADMIN.SewerManhole",
-        "Line": "GIS.GISADMIN.SewerLine",
-        "Service Line": "GIS.GISADMIN.SewerServiceLine"
+        "Manhole": "GIS.GISADMIN.SewerManhole_FDC",
+        "Line": "GIS.GISADMIN.SewerLine_FDC",
+        "Service Line": "GIS.GISADMIN.SewerServiceLine_FDC"
       },
       "workspacetype": "SDE_WORKSPACE",
       "groupids":"7bf56b5caf0f41c7b4cb05888c429cae"
@@ -21,10 +21,10 @@
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Stornwater_simplified.mxd",
       "layertofclookup": {
-        "Inlet":"GIS.GISADMIN.StormInlet",
-        "Manhole": "GIS.GISADMIN.StormManhole",
-        "Line": "GIS.GISADMIN.StormLine",
-        "Service Line": "GIS.GISADMIN.StormServiceLine"
+        "Inlet":"GIS.GISADMIN.StormInlet_FDC",
+        "Manhole": "GIS.GISADMIN.StormManhole_FDC",
+        "Line": "GIS.GISADMIN.StormLine_FDC",
+        "Service Line": "GIS.GISADMIN.StormServiceLine_FDC"
       },
       "workspacetype": "SDE_WORKSPACE",
       "groupids":"7bf56b5caf0f41c7b4cb05888c429cae"

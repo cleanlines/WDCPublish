@@ -6,9 +6,9 @@
   "template": {
     "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/FWP_services_simplified.mxd",
     "layertofclookup": {
-      "FWP_StormLine": "FWP_StormLine",
-      "FWP_SewerLine": "FWP_SewerLine",
-      "FWP_WaterLine": "FWP_WaterLine"
+      "FWP_StormLine": "FWP_StormLine_FDC",
+      "FWP_SewerLine": "FWP_SewerLine_FDC",
+      "FWP_WaterLine": "FWP_WaterLine_FDC"
     },
     "workspacetype": "FILEGDB_WORKSPACE"
   }

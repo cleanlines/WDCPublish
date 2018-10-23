@@ -2,10 +2,11 @@ from BaseObject import BaseObject
 from FileGeodatabaseHelper import FileGeodatabaseHelper
 from MapDocumentHelper import MapDocumentHelper
 from ArcGISOnlineHelper import ArcGISOnlineHelper
+from AbstractPublishHelper import AbstractPublishHelper
 import arcpy
 
 
-class PublishFWPServicesHelper(BaseObject):
+class PublishFWPServicesHelper(BaseObject, AbstractPublishHelper):
 
     def __init__(self):
         super(PublishFWPServicesHelper, self).__init__()
@@ -17,9 +18,6 @@ class PublishFWPServicesHelper(BaseObject):
                 self.log("Creating temp file geodatabase")
                 self._out_temp_db = file_geodb_helper.new_file_geodatabase()
                 # file_geodb_helper.clean_up = False  # DEBUG
-                # we need to - create join
-                # add to map
-                # publish
                 self.log("Copying features to temp file geodatabase")
                 self._copy_features_with_join()
                 self.log("Features copied - preparing map document")

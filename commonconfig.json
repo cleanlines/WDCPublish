@@ -1,8 +1,8 @@
 {
  "sdeconnection":"C:/ZZCloud/Dropbox/Work/WDC/Python/data/gisadmin@gis@2108-FSHXPS13.sde",
   "tablecsvlookup": {
-    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Water_FWV_Sept_2018.csv": "GIS.GISADMIN.WaterLine",
-    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Stormwater_FWV_Sept_2018.csv": "GIS.GISADMIN.StormLine",
-    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Wastewater_FWV_Sept_2018.csv": "GIS.GISADMIN.SewerLine"
+    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Water_FWV_Sept_2018.csv": "GIS.GISADMIN.WaterLine_FDC",
+    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Stormwater_FWV_Sept_2018.csv": "GIS.GISADMIN.StormLine_FDC",
+    "C:/ZZCloud/Dropbox/Work/WDC/Python/data/Wastewater_FWV_Sept_2018.csv": "GIS.GISADMIN.SewerLine_FDC"
   }
 }

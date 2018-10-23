@@ -1,9 +1,11 @@
 from BaseObject import BaseObject
 from MapDocumentHelper import MapDocumentHelper
 from ArcGISOnlineHelper import ArcGISOnlineHelper
+from AbstractPublishHelper import AbstractPublishHelper
 import os
 
-class PublishGeodbServicesHelper(BaseObject):
+
+class PublishGeodbServicesHelper(BaseObject, AbstractPublishHelper):
 
     def __init__(self):
         super(PublishGeodbServicesHelper, self).__init__()

@@ -13,7 +13,6 @@ Since this class wraps all the updates we can change it without changing any of 
 
 '''
 
-
 class ArcGISOnlineHelper(AbstractHelper, BaseObject):
 
     def __init__(self):
@@ -31,7 +30,6 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         r = requests.post(self._config.agolurl+"/sharing/generateToken?f=json", params=payload,  verify=False) # verify setting for debug - fiddler
         if 'token' in r.json().keys():
             self._agol_token = r.json()['token']
-
 
     def _update_agol_file_item(self, item_id, item):
         path, file = os.path.split(item)

@@ -1,12 +1,12 @@
 {
   "emaillookup": {
-    "GIS.GISADMIN.WaterLine": [
+    "GIS.GISADMIN.WaterLine_FDC": [
       "Diana.Staveley@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
-    "GIS.GISADMIN.StormLine": [
+    "GIS.GISADMIN.StormLine_FDC": [
       "matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
-    "GIS.GISADMIN.SewerLine": [
+    "GIS.GISADMIN.SewerLine_FDC": [
       "matthew.deboer@wdc.govt.nz","fsh@eagle.co.nz","natalie.hall@eagle.co.nz"
     ],
     "ProcessFailure":["fsh@eagle.co.nz","natalie.hall@eagle.co.nz"]
