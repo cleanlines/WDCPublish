@@ -1,0 +1,41 @@
+{
+  "assetfield":"FWP_AssetType",
+  "storm": "FWP_StormLine",
+  "sewer": "FWP_SewerLine",
+  "water": "FWP_WaterLine",
+  "threewaters_fc_name":"threewaters",
+  "proximity_fc_name":"proximity_staging",
+  "proximity_point_fc_name":"ProximityPoint",
+  "rammyear":"fw_year",
+  "rammassetid":"cell_id",
+  "FWP_StormLine": [
+    "FWP_AssetType",
+    "COMPKEY",
+    "csv.Year_Planned",
+    "SHAPE@"
+  ],
+  "FWP_SewerLine": [
+    "FWP_AssetType",
+    "COMPKEY",
+    "csv.Year_Planned",
+    "SHAPE@"
+  ],
+  "FWP_WaterLine": [
+    "FWP_AssetType",
+    "COMPKEY",
+    "csv.Target_Year",
+    "SHAPE@"
+  ],
+  "threewaters": {
+    "FWP_AssetType": "TEXT",
+    "CompKey": "LONG",
+    "Year": "LONG"
+  },
+  "proximity_staging": {
+    "FWP_AssetType": "TEXT",
+    "AssetId": "TEXT",
+    "CompKey": "LONG",
+    "Year": "LONG",
+    "fw_year": "TEXT"
+  }
+}
