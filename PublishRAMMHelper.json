@@ -1,0 +1,15 @@
+{
+  "rammfwpdata": "https://services1.arcgis.com/RfTgcgHraFPg7Fq4/ArcGIS/rest/services/RAMM%20Forward%20Works/FeatureServer/3",
+  "fwpgroup": "3ea18e1511294d2db66f4bcf95050b3c",
+  "output_fc": "RAMM_FW",
+  "publishparams": {
+    "hasStaticData": true,
+    "name": "WDC_RAMM_FWP",
+    "maxRecordCount": 5000,
+    "layerInfo": {
+      "capabilities": "Query"
+    }
+  }
+}
+
+

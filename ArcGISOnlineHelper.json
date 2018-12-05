@@ -6,6 +6,7 @@
   "itemdescription": "This item is to support the forward works plan.",
   "tagsfwp": "WDC,FWP",
   "filekeyworks": {
-    "sdfilekeywords": "Data, Service, Service Definition"
+    "sdfilekeywords": "Data, Service, Service Definition",
+    "filegeodbkeywords":"Data"
   }
 }

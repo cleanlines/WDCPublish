@@ -1,7 +1,7 @@
 
 class PublishFactoryEnum(object):
-    __classes = ["PublishFWPServicesHelper", "PublishGeodbServicesHelper","GenericPublishHelper"]
-    FWP, GEODB, GEN = __classes
+    __classes = ["PublishFWPServicesHelper", "PublishGeodbServicesHelper","PublishRAMMHelper"]
+    FWP, GEODB, RAMM = __classes
 
     @classmethod
     def type_valid(cls, item_type):

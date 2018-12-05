@@ -32,7 +32,7 @@ class SendEmail(BaseObject):
             msg['To'] = COMMASPACE.join(self.to)
             msg['Subject'] = subject.encode('utf-8')
             msg['Date'] = formatdate(localtime=True)
-            msg.attach(MIMEText(body_text))
+            msg.attach(MIMEText(body_text+"\nPlease do not reply to this email - this account is not monitored."))
             for f in files or []:
                 with open(f, "rb") as fil:
                     part = MIMEApplication(fil.read(),Name=basename(f))

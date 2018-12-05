@@ -1,5 +1,3 @@
-from PublishGeodbServicesHelper import PublishGeodbServicesHelper
-from PublishFWPServicesHelper import PublishFWPServicesHelper
 from BaseLogger import BaseLogger
 from SendEmail import SendEmail
 from ProcessMonitor import ProcessMonitor
@@ -14,7 +12,7 @@ class PublishWrapper(BaseLogger):
     def publish(self):
         with ProcessMonitor() as pm:
             try:
-                ReportMissingAssets().execute_validation()
+                pass #ReportMissingAssets().execute_validation()
             except Exception as e:
                 self.errorlog(e.message)
                 SendEmail("ProcessFailure").send_email_with_files([self._logger.log_file], "CSV Validation Failure",
@@ -22,7 +20,7 @@ class PublishWrapper(BaseLogger):
                 pm.log_failure("CSV Validation Failure", e.message)
                 return
             try:
-                for i in [PublishFactoryEnum.FWP, PublishFactoryEnum.GEODB, PublishFactoryEnum.GEN]:
+                for i in [PublishFactoryEnum.FWP, PublishFactoryEnum.RAMM]: #[PublishFactoryEnum.FWP, PublishFactoryEnum.GEODB, PublishFactoryEnum.RAMM]:
                     PublishHelperFactory.factory(i).publish()
             except Exception as e:
                 self.errorlog(e.message)

@@ -10,6 +10,7 @@ class PublishFWPServicesHelper(BaseObject, AbstractPublishHelper):
 
     def __init__(self):
         super(PublishFWPServicesHelper, self).__init__()
+        self._out_temp_db = None
         self.log("PublishFWPServicesHelper initialised")
 
     def publish(self):
@@ -17,17 +18,21 @@ class PublishFWPServicesHelper(BaseObject, AbstractPublishHelper):
             with FileGeodatabaseHelper() as file_geodb_helper:
                 self.log("Creating temp file geodatabase")
                 self._out_temp_db = file_geodb_helper.new_file_geodatabase()
+                if hasattr(self._config,"keepoutput"):
+                    file_geodb_helper.clean_up = not self._config.keepoutput == "true"
+                    file_geodb_helper.cache_database_name()
                 # file_geodb_helper.clean_up = False  # DEBUG
                 self.log("Copying features to temp file geodatabase")
                 self._copy_features_with_join()
                 self.log("Features copied - preparing map document")
+                return
                 with MapDocumentHelper(self._config.template) as map_doc_helper:
                     # pass through the temp geodb with new data and get new map
                     # DEBUG map_doc_helper.clean_up = False
                     map_doc_helper.prepare_map_document(self._out_temp_db)
                     self.log("Map document prepared - publishing to ArcGIS Online")
                     with ArcGISOnlineHelper() as agol_helper:
-                        fs_id = agol_helper.publish_map_doc(map_doc_helper.current_map_doc,"FWP")
+                        fs_id = agol_helper.publish_map_doc(map_doc_helper.current_map_doc, "FWP")
                         # depending on the group type we may have to do one or the other - so I'm just going to do both
                         agol_helper.share(fs_id, groups=self._config.fwpgroup)
                         agol_helper.share_items(fs_id, groups=self._config.fwpgroup)

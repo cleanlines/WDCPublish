@@ -6,6 +6,7 @@ import requests
 import arcpy
 import os
 import datetime
+import math
 
 '''
 We should use Python API for 10.6 so in the meantime will use requests
@@ -49,11 +50,12 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         return r.json()
         # TODO: check for success code and wrap error handling
 
-    def _add_agol_file_item(self, item, filetype, keywords):
+    def _add_agol_file_item(self, item, filetype, keywords,title=None):
         self.log("Adding %s" % item)
         path, file = os.path.split(item)
+        title = self._config.itemname if title is None else title
         payload ={
-            "title":self._config.itemname,
+            "title":title,
             "type":filetype,
             # "multipart":"true", # setting this breaks the code below.
             "filename":file,
@@ -88,11 +90,11 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         r = requests.get(self._config.agolurl+"/sharing/search?f=json", params=payload ,verify=False) #
         return r.json()
 
-    def _publish_file_item(self, filetype, item_id, overwrite="false"):
+    def _publish_file_item(self, filetype, item_id, overwrite="false",title=None,publish_params=None):
         # pass through the item id of the object we are publishing from! IE the sd
         self.log("Publishing %s" % item_id)
         payload = {
-            "title": self._config.itemname,
+            "title": self._config.itemname % title,
             "filetype": filetype,
             "description": self._config.itemdescription,
             "tags": self._config.tagsfwp,
@@ -105,6 +107,9 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
             "f": "json",
             "async": "false"
         }
+        if publish_params:
+            payload.update(publish_params)
+
         headers = {"Referer": "http://wdc.govt.nz"}
         r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/publish" % self._config.user, data = payload, headers=headers, verify=False)
         self.log(r.text)
@@ -161,6 +166,27 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         f.close()
         return updated_sddraft
 
+    def publish_file_item(self,item_name, item_type,item_file_type, file_item,keywords,publish_params=None):
+        self._get_agol_token()
+        exists, item_id = self.agol_item_exists(item_name, item_type)
+        print exists, item_id
+        if not exists:
+            item_id = self._add_agol_file_item(file_item, item_type, keywords,item_name)
+            print item_id
+            publish_json = self._publish_file_item(item_file_type, item_id,title=item_name,publish_params=publish_params)
+            self.log(publish_json)
+        else:
+            self.log(self._update_agol_file_item(item_id, file_item))
+            publish_json = self._publish_file_item(item_file_type, item_id, overwrite="true",title=item_name,publish_params=publish_params)
+            self.log(publish_json)
+
+        if 'services' in publish_json:
+            if 'serviceItemId' in publish_json['services'][0]:
+                # we are expecting one service back
+                return (item_id, publish_json['services'][0]['serviceItemId'])
+        else:
+            return (item_id, None)
+
     def publish_map_doc(self, map_doc,service_name="XXX"):
         self._config.itemname = self._config.itemname % service_name
         self._get_agol_token()
@@ -211,6 +237,63 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
             data=payload, headers=headers, verify=False)
         self.log(r.text)
         return r.json()["results"][0]["success"] == "true"
+
+    # adapted from https://community.esri.com/docs/DOC-6496-download-arcgis-online-feature-service-or-arcgis-server-featuremap-service
+    # doesn't download attachments though the original code does
+    def download_hosted_feature_service_layer(self, hosted_feature_layer, temp_db, output_fc):
+        # note this doesn't do attachments for this project
+        self._get_agol_token()
+        base_hfl_url = hosted_feature_layer + "/query"
+
+        from arcpy import env
+        env.overwriteOutput = 1
+        wksp = env.workspace
+        env.workspace = temp_db
+
+        payload = {'where': '1=1',
+                   'returnIdsOnly': 'true',
+                   'f': 'json',
+                   'token': self._agol_token}
+
+        response = requests.post(base_hfl_url, data=payload, verify=False)
+        data = response.json()
+        try:
+            data['objectIds'].sort()
+        except Exception as e:
+            self.log(str(data))
+            self.errorlog(e.message)
+            raise
+
+        iteration = int(data['objectIds'][-1])
+        minOID = int(data['objectIds'][0]) - 1
+        OID = data['objectIdFieldName']
+        y = minOID
+        x = minOID + 1000
+        firstTime = 'True'
+        newIteration = (math.ceil(iteration / 1000.0) * 1000)
+        while y < newIteration:
+            if x > int(newIteration):
+                x = newIteration
+
+            where = OID + '>' + str(y) + 'AND ' + OID + '<=' + str(x)
+            fields ='*'
+            query = "?where={}&outFields={}&returnGeometry=true&f=json&token={}".format(where, fields, self._agol_token)
+            fsURL = base_hfl_url + query
+            fs = arcpy.FeatureSet()
+            fs.load(fsURL)
+
+            if firstTime == 'True':
+                self.log('Copying features with ObjectIDs from ' + str(y) + ' to ' + str(x))
+                arcpy.FeatureClassToFeatureClass_conversion(fs, temp_db ,output_fc)
+                firstTime = 'False'
+            else:
+                self.log('Appending features with ObjectIDs from ' + str(y) + ' to ' + str(x))
+                arcpy.Append_management(fs, output_fc, "NO_TEST")
+
+            x += 1000
+            y += 1000
+
+        env.workspace = wksp
 
     def __enter__(self):
         return self

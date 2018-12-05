@@ -23,6 +23,17 @@ class FileHelper(BaseObject):
                     self.log("Failed to delete: %s" % filename)
                     self.errorlog(e.message)
 
+    def delete_file(self, filename):
+        try:
+            os.remove(filename)
+        except WindowsError as we:
+            self.log("Failed to delete: %s" % filename)
+            self.log(we.strerror)
+        except Exception as e:
+            self.log("Failed to delete: %s" % filename)
+            self.errorlog(e.message)
+
+
 # if __name__ == "__main__":
 #     fh = FileHelper()
 #     fh.remove_all_temp_files("csv")
