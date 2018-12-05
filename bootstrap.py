@@ -12,7 +12,7 @@ class PublishWrapper(BaseLogger):
     def publish(self):
         with ProcessMonitor() as pm:
             try:
-                pass #ReportMissingAssets().execute_validation()
+                ReportMissingAssets().execute_validation()
             except Exception as e:
                 self.errorlog(e.message)
                 SendEmail("ProcessFailure").send_email_with_files([self._logger.log_file], "CSV Validation Failure",
@@ -20,7 +20,7 @@ class PublishWrapper(BaseLogger):
                 pm.log_failure("CSV Validation Failure", e.message)
                 return
             try:
-                for i in [PublishFactoryEnum.FWP, PublishFactoryEnum.RAMM]: #[PublishFactoryEnum.FWP, PublishFactoryEnum.GEODB, PublishFactoryEnum.RAMM]:
+                for i in [PublishFactoryEnum.FWP, PublishFactoryEnum.GEODB, PublishFactoryEnum.RAMM]:
                     PublishHelperFactory.factory(i).publish()
             except Exception as e:
                 self.errorlog(e.message)

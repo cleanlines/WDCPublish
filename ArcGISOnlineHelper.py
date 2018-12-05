@@ -90,11 +90,19 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         r = requests.get(self._config.agolurl+"/sharing/search?f=json", params=payload ,verify=False) #
         return r.json()
 
-    def _publish_file_item(self, filetype, item_id, overwrite="false",title=None,publish_params=None):
+    def _publish_file_item(self, filetype, item_id, overwrite="false",title=None, publish_params=None):
         # pass through the item id of the object we are publishing from! IE the sd
         self.log("Publishing %s" % item_id)
+        if title:
+            try:
+                a_title = self._config.itemname % title
+            except Exception as e:
+                self.errorlog(e.message)
+        else:
+            a_title = self._config.itemname
+
         payload = {
-            "title": self._config.itemname % title,
+            "title": a_title,
             "filetype": filetype,
             "description": self._config.itemdescription,
             "tags": self._config.tagsfwp,
@@ -169,10 +177,9 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
     def publish_file_item(self,item_name, item_type,item_file_type, file_item,keywords,publish_params=None):
         self._get_agol_token()
         exists, item_id = self.agol_item_exists(item_name, item_type)
-        print exists, item_id
+
         if not exists:
             item_id = self._add_agol_file_item(file_item, item_type, keywords,item_name)
-            print item_id
             publish_json = self._publish_file_item(item_file_type, item_id,title=item_name,publish_params=publish_params)
             self.log(publish_json)
         else:

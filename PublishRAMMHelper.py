@@ -35,7 +35,6 @@ class PublishRAMMHelper(BaseObject, AbstractPublishHelper):
             with FileGeodatabaseHelper() as file_geodb_helper:
                 file_geodb_helper.clean_up = False # debug
                 file_geodb_helper.current_file_geodb = file_geodb
-                print file_geodb
                 with ArcGISOnlineHelper() as agol_helper:
                     agol_helper.download_hosted_feature_service_layer(self._config.rammfwpdata, file_geodb, self._config.output_fc)
 

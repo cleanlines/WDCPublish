@@ -25,7 +25,6 @@ class PublishFWPServicesHelper(BaseObject, AbstractPublishHelper):
                 self.log("Copying features to temp file geodatabase")
                 self._copy_features_with_join()
                 self.log("Features copied - preparing map document")
-                return
                 with MapDocumentHelper(self._config.template) as map_doc_helper:
                     # pass through the temp geodb with new data and get new map
                     # DEBUG map_doc_helper.clean_up = False
