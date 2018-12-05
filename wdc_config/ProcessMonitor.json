@@ -1,0 +1,4 @@
+{
+  "db":"D:/Eagle/AutoPublish/data/processlog.db",
+  "insert":"INSERT INTO ProcessMonitor VALUES (?,?,?,?,?)"
+}

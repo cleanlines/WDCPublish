@@ -1,0 +1,9 @@
+{
+ "sdeconnection":"D:/Eagle/AutoPublish/data/gisadmin@gis@gisdb01.sde",
+  "tablecsvlookup": {
+    "\\\\internal.wdc.govt.nz\\dfs\\gis_working\\Asset Data\\ForwardWorks\\Water FWV Sept 2018.csv": "GIS.GISADMIN.WaterLine",
+    "\\\\internal.wdc.govt.nz\\dfs\\gis_working\\Asset Data\\ForwardWorks\\Stormwater FWV Sept 2018.csv": "GIS.GISADMIN.StormLine",
+    "\\\\internal.wdc.govt.nz\\dfs\\gis_working\\Asset Data\\ForwardWorks\\Wastewater FWV Sept 2018.csv": "GIS.GISADMIN.SewerLine"
+  },
+  "shelf":"_ags_filegeodb"
+}

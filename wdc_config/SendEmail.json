@@ -1,0 +1,17 @@
+{
+  "emaillookup": {
+    "GIS.GISADMIN.WaterLine": [
+      "Role-AssetEngineer-Water@wdc.govt.nz","Natalie_Hall@eagle.co.nz","FWVAlert@itinfrastructurewdcgovt.onmicrosoft.com"
+    ],
+    "GIS.GISADMIN.StormLine": [
+      "Role-WasteandDrainageAssetEngineer@wdc.govt.nz","Natalie_Hall@eagle.co.nz","FWVAlert@itinfrastructurewdcgovt.onmicrosoft.com"
+    ],
+    "GIS.GISADMIN.SewerLine": [
+      "Role-WasteandDrainageAssetEngineer@wdc.govt.nz","Natalie_Hall@eagle.co.nz","FWVAlert@itinfrastructurewdcgovt.onmicrosoft.com"
+    ],
+    "ProcessFailure":["fsh@eagle.co.nz","Natalie_Hall@eagle.co.nz","FWVAlert@itinfrastructurewdcgovt.onmicrosoft.com"]
+  },
+  "emailfrom":"FWV@wdc.govt.nz",
+  "smtpserver":"smtp.internal.wdc.govt.nz",
+  "smtpport":25
+}
