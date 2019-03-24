@@ -120,15 +120,18 @@ class ProximityLayerCreator(BaseObject):
         insert_fields = [k for k in self._config.threewaters.keys()]
         # these are the old 10.1 cursors - need to be updated @ 10.6.1
         cursor = arcpy.da.InsertCursor("%s/%s" % (file_geodb, self._config.threewaters_fc_name), insert_fields+["SHAPE@"])
-        # there may be issues with the fields - eg csv.Year_Planned - you may need to check the created file geodb.
         try:
             for fc in fcs:
+                self.log(fc)
                 field_names = getattr(self._config, fc.split('/')[-1])
+                self.log(str(field_names))
                 # the fields don't actually reflect the alias - esp for the joined CSV - we need to get the actual field names
                 fds = arcpy.ListFields(fc)
                 for desc_fd in fds:
                     if desc_fd.aliasName in field_names:
+                        self.log(desc_fd.aliasName+","+desc_fd.name)
                         field_names[field_names.index(desc_fd.aliasName)] = desc_fd.name
+                self.log(str(field_names))
                 with arcpy.da.SearchCursor(fc, field_names) as search_cursor:
                     for row in search_cursor:
                         cursor.insertRow(row)

@@ -6,7 +6,7 @@
         "Line": "GIS.GISADMIN.WaterLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids":"3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
     },
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Sewer_simplified.mxd",
@@ -16,18 +16,27 @@
         "Service Line": "GIS.GISADMIN.SewerServiceLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids":"3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
     },
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Stornwater_simplified.mxd",
       "layertofclookup": {
-        "Inlet":"GIS.GISADMIN.StormInlet",
+        "Inlet": "GIS.GISADMIN.StormInlet",
         "Manhole": "GIS.GISADMIN.StormManhole",
         "Line": "GIS.GISADMIN.StormLine",
         "Service Line": "GIS.GISADMIN.StormServiceLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids":"3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
+    },
+    {
+      "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Search.mxd",
+      "layertofclookup": {
+        "Address": "GIS.GISADMIN.WDCAddressSearch",
+        "Road": "GIS.GISADMIN.WDCLegalRoad"
+      },
+      "workspacetype": "SDE_WORKSPACE",
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
     }
   ]
 }
