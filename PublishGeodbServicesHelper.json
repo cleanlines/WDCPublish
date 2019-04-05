@@ -6,7 +6,8 @@
         "Line": "GIS.GISADMIN.WaterLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c",
+      "sharewith":"groupids"
     },
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Sewer_simplified.mxd",
@@ -16,7 +17,8 @@
         "Service Line": "GIS.GISADMIN.SewerServiceLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c",
+      "sharewith":"groupids"
     },
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Stornwater_simplified.mxd",
@@ -27,7 +29,8 @@
         "Service Line": "GIS.GISADMIN.StormServiceLine"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "3ea18e1511294d2db66f4bcf95050b3c",
+      "sharewith":"groupids"
     },
     {
       "map": "C:/ZZCloud/Dropbox/Work/WDC/Python/maps/Search.mxd",
@@ -36,7 +39,8 @@
         "Road": "GIS.GISADMIN.WDCLegalRoad"
       },
       "workspacetype": "SDE_WORKSPACE",
-      "groupids": "3ea18e1511294d2db66f4bcf95050b3c"
+      "groupids": "",
+      "sharewith":"everyone"
     }
   ]
 }

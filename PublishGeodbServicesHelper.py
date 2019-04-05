@@ -20,7 +20,12 @@ class PublishGeodbServicesHelper(BaseObject, AbstractPublishHelper):
                         with ArcGISOnlineHelper() as agol_helper:
                             service_name = os.path.basename(os.path.splitext(a_template["map"])[0])
                             fs_id = agol_helper.publish_map_doc(map_doc_helper.current_map_doc, service_name)
-                            agol_helper.share_items(fs_id, groups=a_template["groupids"])
+                            if a_template['sharewith'] == 'everyone':
+                                agol_helper.share_items(fs_id, everyone="true")
+                            elif a_template['sharewith'] == 'organisation':
+                                agol_helper.share_items(fs_id, org="true")
+                            else:
+                                agol_helper.share_items(fs_id, groups=a_template["groupids"])
                 except Exception as e:
                     self.errorlog(e)
                     self.log("Publishing %s data failed Error below:" % a_template['map'])
