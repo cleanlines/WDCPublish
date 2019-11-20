@@ -2,11 +2,14 @@
   "user": "wdc_eagle",
   "password": "A5xg8k01",
   "agolurl": "https://wdc.maps.arcgis.com",
-  "itemname": "WDC_%s_Service",
+  "itemname": "WDC_%s_Service_Test",
   "itemdescription": "This item is to support the forward works plan.",
   "tagsfwp": "WDC,FWP",
   "filekeyworks": {
     "sdfilekeywords": "Data, Service, Service Definition",
     "filegeodbkeywords":"Data"
-  }
+  },
+  "powershellget":"D:\\Eagle\\AutoPublish\\powershell\\PowerShellGet.ps1",
+  "powershellpost":"D:\\Eagle\\AutoPublish\\powershell\\PowerShellPost.ps1",
+  "powershellupload":"D:\\Eagle\\AutoPublish\\powershell\\PowerShellUploadFile.ps1"
 }

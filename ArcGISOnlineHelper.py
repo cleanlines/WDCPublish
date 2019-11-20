@@ -7,6 +7,9 @@ import arcpy
 import os
 import datetime
 import math
+import subprocess
+import json
+import urllib
 
 '''
 We should use Python API for 10.6 so in the meantime will use requests
@@ -16,23 +19,25 @@ Since this class wraps all the updates we can change it without changing any of 
 
 class ArcGISOnlineHelper(AbstractHelper, BaseObject):
 
-    def __init__(self):
+    def __init__(self):#tick
         super(ArcGISOnlineHelper, self).__init__()
         self.log("ArcGISOnlineHelper initialised")
         self._agol_token = None
-        self._cleanups =[]
+        self._cleanups = []
         self._current_service_name = ""
 
-    def _get_agol_token(self):
-        payload = {"request": "gettoken",
-                   "Referer": "http://wdc.govt.nz",
-                   "username": self._config.user,
-                   "password": self._config.password}
-        r = requests.post(self._config.agolurl+"/sharing/generateToken?f=json", params=payload,  verify=False) # verify setting for debug - fiddler
-        if 'token' in r.json().keys():
-            self._agol_token = r.json()['token']
+    def _get_agol_token(self): #tick
+        #payload = "request=gettoken\"&\"Referer=http://wdc.govt.nz\"&\"username="+self._config.user+"\"&\"password="+self._config.password
+        payload = "request=gettoken&Referer=http://wdc.govt.nz&username=" + self._config.user + "&password=" + self._config.password
+        result = self.run_via_powershell("https://wdc.maps.arcgis.com/sharing/generateToken?f=json", payload,"post")
+        if result:
+            jsonobj = json.loads(result)
+            if 'token' in jsonobj:
+                self._agol_token = jsonobj['token']
+        else:
+            raise Exception("Cannot acquire arcgis online token")
 
-    def _update_agol_file_item(self, item_id, item):
+    def _update_agol_file_item(self, item_id, item): #tick
         path, file = os.path.split(item)
         payload = {
             "filename": file,
@@ -41,16 +46,25 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
             "f": "json",
             "description": self._config.itemdescription+"<br/>Item updated on %s by automated script." % datetime.datetime.now().strftime("%d %B %Y %H:%M:%S")
         }
+        payload = "^".join(["{0}={1}".format(k, v) for k, v in payload.items()])
+        #payload = "filename={0}^token={1}^itemType=file^f=json^{2}".format(file,self._agol_token,urllib.urlencode({"description":self._config.itemdescription+"<br/>Item updated on %s by automated script." % datetime.datetime.now().strftime("%d %B %Y %H:%M:%S")}))
+        url = self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/update" % (self._config.user, item_id)
+        file = item
+        result = self.upload_via_powershell(url,payload,file)
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj
+
         # fix referer - put in config
-        headers = {"Referer": "http://wdc.govt.nz"}
-        files = {'file': (file, open(item, 'rb'), 'application/octet-stream')}
-        r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/update" % (self._config.user, item_id),
-                          data=payload, files=files, headers=headers, verify=False)
-        self.log(r.text)
-        return r.json()
+        # item is the sd file, file is the name
+        #headers = {"Referer": "http://wdc.govt.nz"}
+        # files = {'file': (file, open(item, 'rb'), 'application/octet-stream')}
+        # r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/update" % (self._config.user, item_id), data=payload, files=files, headers=headers, verify=False)
+        # self.log(r.text)
+        # return r.json()
         # TODO: check for success code and wrap error handling
 
-    def _add_agol_file_item(self, item, filetype, keywords,title=None):
+    def _add_agol_file_item(self, item, filetype, keywords,title=None):#tick
         self.log("Adding %s" % item)
         path, file = os.path.split(item)
         title = self._config.itemname if title is None else title
@@ -67,30 +81,42 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
             "async":"false",
             "description":self._config.itemdescription
         }
-        headers={"Referer":"http://wdc.govt.nz"}
-        files = {'file': (file, open(item, 'rb'), 'application/octet-stream')}
+        #payload = "title={0}^type={1}^filename={2}^tags={3}^token={4}^itemType=file^f=json^typeKeywords={5}^async=false^description={6}".format(title,filetype,file,self._config.tagsfwp,self._agol_token,self._config.filekeyworks[keywords],self._config.itemdescription)
+        payload = "^".join(["{0}={1}".format(k, v) for k, v in payload.items()])
+        url = self._config.agolurl + "/sharing/rest/content/users/%s/addItem" % self._config.user
+        file = item
+        result = self.upload_via_powershell(url, payload, file)
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj['id']
 
-        r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/addItem" % self._config.user, data=payload,files=files, headers=headers, verify=False)
-        self.log(r.text)
-        return r.json()['id']
+        # #headers={"Referer":"http://wdc.govt.nz"}
+        # files = {'file': (file, open(item, 'rb'), 'application/octet-stream')}
+        #
+        # r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/addItem" % self._config.user, data=payload,files=files, headers=headers, verify=False)
+        # self.log(r.text)
+        #return r.json()['id']
         # TODO: check for success code and wrap error handling
 
-    def agol_item_exists(self, name, type):
+    def agol_item_exists(self, name, type): #tick
         search = self._search_for_item(name,type)
         if search['total'] > 0:
             return (True,search['results'][0]['id'])
         return (False,None)
 
-    def _search_for_item(self,name,type):
-        payload ={
-            "f":"json",
-            "token":self._agol_token,
-            "q": 'title:"{0}" AND type:"{1}"'.format(name,type)
-        }
-        r = requests.get(self._config.agolurl+"/sharing/search?f=json", params=payload ,verify=False) #
-        return r.json()
+    def _search_for_item(self,name,type):#tick
+        payload = "f=json^token="+self._agol_token+"^q="+"title:\"{0}\" AND type:\"{1}\"".format(name,type)
+        url = self._config.agolurl+"/sharing/search"
+        result = self.run_via_powershell(url, payload, "get")
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj
+        else:
+            return {}
+        # r = requests.get(self._config.agolurl+"/sharing/search?f=json", params=payload ,verify=False) #
+        # return r.json()
 
-    def _publish_file_item(self, filetype, item_id, overwrite="false",title=None, publish_params=None):
+    def _publish_file_item(self, filetype, item_id, overwrite="false",title=None, publish_params=None): #tick
         # pass through the item id of the object we are publishing from! IE the sd
         self.log("Publishing %s" % item_id)
         if title:
@@ -118,12 +144,18 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         if publish_params:
             payload.update(publish_params)
 
-        headers = {"Referer": "http://wdc.govt.nz"}
-        r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/publish" % self._config.user, data = payload, headers=headers, verify=False)
-        self.log(r.text)
-        return r.json()
+        payload = "&".join(["{0}={1}".format(k,v) for k,v in payload.items()])
+        url = self._config.agolurl + "/sharing/rest/content/users/%s/publish" % self._config.user
+        result = self.run_via_powershell(url, payload, "post")
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj
+        #headers = {"Referer": "http://wdc.govt.nz"}
+        # r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/publish" % self._config.user, data = payload, headers=headers, verify=False)
+        # self.log(r.text)
+        # return r.json()
 
-    def _stage_service_sd(self,map_document):
+    def _stage_service_sd(self,map_document): #tick
         temp_sddraft = TempFileName.generate_temporary_file_name("HostedMS.sddraft", split=False)
         path, file = TempFileName.generate_temporary_file_name("", split=True)
         service_definition = os.path.join(path, self._config.itemname + ".sd")
@@ -138,7 +170,7 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         self._cleanups += [service_definition, temp_sddraft, updated_draft]
         return service_definition
 
-    def _prep_sddraft(self,sddraft):
+    def _prep_sddraft(self,sddraft): #tick
         doc = DOM.parse(sddraft)
         #  Read the sddraft xml. doc = DOM.parse(sddraft)
         #  Change service from map service to feature service
@@ -174,7 +206,7 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         f.close()
         return updated_sddraft
 
-    def publish_file_item(self,item_name, item_type,item_file_type, file_item,keywords,publish_params=None):
+    def publish_file_item(self,item_name, item_type,item_file_type, file_item,keywords,publish_params=None): #tick
         self._get_agol_token()
         exists, item_id = self.agol_item_exists(item_name, item_type)
 
@@ -194,7 +226,7 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         else:
             return (item_id, None)
 
-    def publish_map_doc(self, map_doc,service_name="XXX"):
+    def publish_map_doc(self, map_doc,service_name="XXX"): #tick
         self._config.itemname = self._config.itemname % service_name
         self._get_agol_token()
         self._current_service_name = service_name
@@ -213,41 +245,52 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         exists, fs_id = self.agol_item_exists(self._config.itemname, "Feature Service")
         return fs_id
 
-    def share(self,item_id, everyone="false", org="false", groups=" "):
-        payload = {
-            "everyone":everyone,
-            "org":org,
-            "groups":groups,
-            "token": self._agol_token,
-            "f": "json",
-            "async": "false"
-        }
-        headers = {"Referer": "http://wdc.govt.nz"}
-        r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/share" % (self._config.user, item_id),
-                          data=payload, headers=headers, verify=False)
-        self.log(r.text)
-        return (r.json()['itemId'], r.json()['notSharedWith'])
+    def share(self,item_id, everyone="false", org="false", groups=" "): #tick
+        # payload = {
+        #     "everyone":everyone,
+        #     "org":org,
+        #     "groups":groups,
+        #     "token": self._agol_token,
+        #     "f": "json",
+        #     "async": "false"
+        # }
+        payload = "everyone="+everyone+"&org="+org+"&groups="+groups+"&token="+self._agol_token+"&f=json&async=false"
+        url = self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/share" % (self._config.user, item_id)
+        result = self.run_via_powershell(url, payload, "post")
+        #headers = {"Referer": "http://wdc.govt.nz"}
+        #r = requests.post(self._config.agolurl + "/sharing/rest/content/users/%s/items/%s/share" % (self._config.user, item_id), data=payload, headers=headers, verify=False)
+        #self.log(r.text)
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj['itemId'], jsonobj['notSharedWith']
 
-    def share_items(self, items, everyone="false", org="false", groups=" "):
-        payload = {
-            "org":org,
-            "everyone":everyone,
-            "groups": groups,
-            "token": self._agol_token,
-            "f": "json",
-            "items": items,
-            "confirmItemControl": "true"
-        }
-        headers = {"Referer": "http://wdc.govt.nz"}
-        r = requests.post(
-            self._config.agolurl + "/sharing/rest/content/users/%s/shareItems" % self._config.user,
-            data=payload, headers=headers, verify=False)
-        self.log(r.text)
-        return r.json()["results"][0]["success"] == "true"
+    def share_items(self, items, everyone="false", org="false", groups=" "):#tick
+        # payload = {
+        #     "org":org,
+        #     "everyone":everyone,
+        #     "groups": groups,
+        #     "token": self._agol_token,
+        #     "f": "json",
+        #     "items": items,
+        #     "confirmItemControl": "true"
+        # }
+        payload = "org="+org+"&everyone="+everyone+"&groups="+groups+"&token="+ self._agol_token+"&f=json&items="+items+"&confirmItemControl=true"
+        url = self._config.agolurl + "/sharing/rest/content/users/%s/shareItems" % self._config.user
+        result = self.run_via_powershell(url, payload, "post")
+        if result:
+            jsonobj = json.loads(result)
+            return jsonobj["results"][0]["success"] == "true"
+
+        #headers = {"Referer": "http://wdc.govt.nz"}
+        # r = requests.post(
+        #     self._config.agolurl + "/sharing/rest/content/users/%s/shareItems" % self._config.user,
+        #     data=payload, headers=headers, verify=False)
+        # self.log(r.text)
+        #return r.json()["results"][0]["success"] == "true"
 
     # adapted from https://community.esri.com/docs/DOC-6496-download-arcgis-online-feature-service-or-arcgis-server-featuremap-service
     # doesn't download attachments though the original code does
-    def download_hosted_feature_service_layer(self, hosted_feature_layer, temp_db, output_fc):
+    def download_hosted_feature_service_layer(self, hosted_feature_layer, temp_db, output_fc): #tick
         # note this doesn't do attachments for this project
         self._get_agol_token()
         base_hfl_url = hosted_feature_layer + "/query"
@@ -257,13 +300,17 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         wksp = env.workspace
         env.workspace = temp_db
 
-        payload = {'where': '1=1',
-                   'returnIdsOnly': 'true',
-                   'f': 'json',
-                   'token': self._agol_token}
+        # payload = {'where': '1=1',
+        #            'returnIdsOnly': 'true',
+        #            'f': 'json',
+        #            'token': self._agol_token}
 
-        response = requests.post(base_hfl_url, data=payload, verify=False)
-        data = response.json()
+        payload = "where=1%3D1&returnIdsOnly=true&f=json&token="+self._agol_token
+        response = self.run_via_powershell(base_hfl_url, payload, "post")
+        #response = requests.post(base_hfl_url, data=payload, verify=False)
+        if response:
+            data = json.loads(response)
+        #data = response.json()
         try:
             data['objectIds'].sort()
         except Exception as e:
@@ -311,6 +358,30 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
             if arcpy.Exists(file):
                 arcpy.Delete_management(file)
 
+    def run_via_powershell(self, url, payload, method='get'):
+        powerShellPath = r'powershell.exe'
+        if method == 'post':
+            powerShellCmd = self._config.powershellpost
+        else:
+            powerShellCmd = self._config.powershellget
+        p = subprocess.Popen([powerShellPath, '-ExecutionPolicy', 'Unrestricted', '-File', powerShellCmd, url, payload], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = p.communicate()
+        rc = p.returncode
+        self.log("Return code given to Python script is: " + str(rc))
+        self.log("stdout:\n\n" + str(output))
+        self.log("stderr: " + str(error))
+        return str(output)
+
+    def upload_via_powershell(self, url, payload, file):
+        powerShellPath = r'powershell.exe'
+        powerShellCmd = self._config.powershellupload
+        p = subprocess.Popen([powerShellPath, '-ExecutionPolicy', 'Unrestricted', '-File', powerShellCmd, url, payload, file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = p.communicate()
+        rc = p.returncode
+        self.log("Return code given to Python script is: " + str(rc))
+        self.log("stdout:\n\n" + str(output))
+        self.log("stderr: " + str(error))
+        return str(output)
 
 # if __name__ == "__main__":
 #     agol = ArcGISOnlineHelper()
