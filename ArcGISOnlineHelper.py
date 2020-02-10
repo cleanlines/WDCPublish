@@ -327,11 +327,21 @@ class ArcGISOnlineHelper(AbstractHelper, BaseObject):
         newIteration = (math.ceil(iteration / 1000.0) * 1000)
         while y < newIteration:
             if x > int(newIteration):
-                x = newIteration
+                x = int(newIteration)
 
             where = OID + '>' + str(y) + 'AND ' + OID + '<=' + str(x)
+            self.log(where)
             fields ='*'
             query = "?where={}&outFields={}&returnGeometry=true&f=json&token={}".format(where, fields, self._agol_token)
+            count_query = query + "&returnCountOnly=true"
+            # get a count - 0 counts bomb the append and the JSON is malformed.
+            count_result = self.run_via_powershell(base_hfl_url, count_query[1:], "post")
+            count_data = json.loads(count_result)
+            if "count" not in count_data:
+                break
+            elif count_data["count"] == 0:
+                break
+
             fsURL = base_hfl_url + query
             fs = arcpy.FeatureSet()
             fs.load(fsURL)
